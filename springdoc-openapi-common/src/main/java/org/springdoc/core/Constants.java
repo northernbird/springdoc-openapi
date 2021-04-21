@@ -61,9 +61,14 @@ public final class Constants {
 	public static final String SWAGGER_CONFIG_URL = API_DOCS_URL + DEFAULT_PATH_SEPARATOR + SWAGGGER_CONFIG_FILE;
 
 	/**
+	 * The constant YAML.
+	 */
+	public static final String YAML = "yaml";
+
+	/**
 	 * The constant DEFAULT_API_DOCS_URL_YAML.
 	 */
-	public static final String DEFAULT_API_DOCS_URL_YAML = API_DOCS_URL + ".yaml";
+	public static final String DEFAULT_API_DOCS_URL_YAML = API_DOCS_URL + "." + YAML;
 
 	/**
 	 * The constant SPRINGDOC_ENABLED.
@@ -101,9 +106,14 @@ public final class Constants {
 	public static final String NULL = ":#{null}";
 
 	/**
+	 * The constant SPRING_MVC_SERVLET_PATH.
+	 */
+	public static final String SPRING_MVC_SERVLET_PATH = "spring.mvc.servlet.path";
+
+	/**
 	 * The constant MVC_SERVLET_PATH.
 	 */
-	public static final String MVC_SERVLET_PATH = "${spring.mvc.servlet.path" + NULL + "}";
+	public static final String MVC_SERVLET_PATH = "${" + SPRING_MVC_SERVLET_PATH + NULL + "}";
 
 	/**
 	 * The constant SPRINGDOC_SHOW_ACTUATOR.
@@ -141,14 +151,19 @@ public final class Constants {
 	public static final String CLASSPATH_RESOURCE_LOCATION = ResourceUtils.CLASSPATH_URL_PREFIX + "/META-INF/resources";
 
 	/**
+	 * The constant SWAGGER_UI_PREFIX.
+	 */
+	public static final String SWAGGER_UI_PREFIX = "/swagger-ui";
+
+	/**
 	 * The constant SWAGGER_UI_URL.
 	 */
-	public static final String SWAGGER_UI_URL = "/swagger-ui/index.html";
+	public static final String SWAGGER_UI_URL = SWAGGER_UI_PREFIX + "/index.html";
 
 	/**
 	 * The constant SWAGGER_UI_OAUTH_REDIRECT_URL.
 	 */
-	public static final String SWAGGER_UI_OAUTH_REDIRECT_URL = "/swagger-ui/oauth2-redirect.html";
+	public static final String SWAGGER_UI_OAUTH_REDIRECT_URL = SWAGGER_UI_PREFIX + "/oauth2-redirect.html";
 
 	/**
 	 * The constant APPLICATION_OPENAPI_YAML.
@@ -270,6 +285,55 @@ public final class Constants {
 	 */
 	public static final String CSRF_DEFAULT_HEADER_NAME= "X-XSRF-TOKEN";
 
+	/**
+	 * The constant OPERATION_ATTRIBUTE.
+	 */
+	public static final String OPERATION_ATTRIBUTE = Constants.class.getName() + ".operation";
+
+	/**
+	 * The constant MANAGEMENT_ENDPOINTS_WEB.
+	 */
+	public static final String MANAGEMENT_ENDPOINTS_WEB = "management.endpoints.web";
+
+	/**
+	 * The constant ALL_PATTERN.
+	 */
+	public static final String ALL_PATTERN = "/**";
+
+	/**
+	 * The constant HEALTH_PATTERN.
+	 */
+	public static final String HEALTH_PATTERN = "/health/*";
+
+	/**
+	 * The constant SPRINGDOC_USE_MANAGEMENT_PORT.
+	 */
+	public static final String SPRINGDOC_USE_MANAGEMENT_PORT = "springdoc.use-management-port";
+
+	/**
+	 * The constant DEFAULT_SWAGGER_UI_ACTUATOR_PATH.
+	 */
+	public static final String DEFAULT_SWAGGER_UI_ACTUATOR_PATH= "swaggerui";
+
+	/**
+	 * The constant DEFAULT_API_DOCS_ACTUATOR_URL.
+	 */
+	public static final String DEFAULT_API_DOCS_ACTUATOR_URL = "openapi";
+
+	/**
+	 * The constant DEFAULT_YAML_API_DOCS_ACTUATOR_PATH.
+	 */
+	public static final String DEFAULT_YAML_API_DOCS_ACTUATOR_PATH = DEFAULT_PATH_SEPARATOR + YAML;
+
+	/**
+	 * The constant ACTUATOR_DEFAULT_GROUP.
+	 */
+	public static final String ACTUATOR_DEFAULT_GROUP = "x-actuator";
+
+	/**
+	 * The constant LINKS_SCHEMA_CUSTOMISER.
+	 */
+	public static final String LINKS_SCHEMA_CUSTOMISER  = "linksSchemaCustomiser";
 	/**
 	 * Instantiates a new Constants.
 	 */

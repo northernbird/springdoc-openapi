@@ -4,7 +4,7 @@
 	<parent>
 		<artifactId>springdoc-openapi</artifactId>
 		<groupId>org.springdoc</groupId>
-		<version>1.4.9-SNAPSHOT</version>
+		<version>1.5.8-SNAPSHOT</version>
 	</parent>
 	<artifactId>springdoc-openapi-groovy</artifactId>
 	<dependencies>
@@ -33,6 +33,17 @@
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<Automatic-Module-Name>org.springdoc.openapi.groovy</Automatic-Module-Name>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.codehaus.gmavenplus</groupId>
 				<artifactId>gmavenplus-plugin</artifactId>

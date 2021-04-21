@@ -17,18 +17,20 @@
  *  *
  *
  */
+
 package org.springdoc.core;
 
-
+import org.springframework.boot.actuate.autoconfigure.web.server.ConditionalOnManagementPort;
+import org.springframework.boot.actuate.autoconfigure.web.server.ManagementPortType;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Conditional;
 
-import static org.springdoc.core.Constants.GROUP_CONFIG_FIRST_PROPERTY;
+import static org.springdoc.core.Constants.SPRINGDOC_SHOW_ACTUATOR;
 
 /**
  * The type Multiple open api support condition.
- * @author bnasslahsen
+ * @author bnasslashen
  */
 public class MultipleOpenApiSupportCondition extends AnyNestedCondition {
 
@@ -40,17 +42,18 @@ public class MultipleOpenApiSupportCondition extends AnyNestedCondition {
 	}
 
 	/**
-	 * The type On grouped open api bean.
+	 * The type On multiple open api support condition.
 	 * @author bnasslahsen
 	 */
-	@ConditionalOnBean(GroupedOpenApi.class)
-	static class OnGroupedOpenApiBean {}
+	@Conditional(MultipleOpenApiGroupsCondition.class)
+	static class OnMultipleOpenApiSupportCondition {}
 
 	/**
-	 * The type On group config property.
-	 * @author bnasslahsen
+	 * The type On actuator different port.
+	 * @author bnasslashen
 	 */
-	@ConditionalOnProperty(name = GROUP_CONFIG_FIRST_PROPERTY)
-	static class OnGroupConfigProperty {}
+	@ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
+	@ConditionalOnProperty(SPRINGDOC_SHOW_ACTUATOR)
+	static class OnActuatorDifferentPort{}
 
 }

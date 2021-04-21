@@ -29,17 +29,17 @@
             "content": {
               "application/hal+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CollectionModelAccount"
+                  "$ref": "#/components/schemas/CollectionModelEntityModelAccount"
                 }
               },
               "application/x-spring-data-compact+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CollectionModelAccount"
+                  "$ref": "#/components/schemas/CollectionModelEntityModelAccount"
                 }
               },
               "text/uri-list": {
                 "schema": {
-                  "$ref": "#/components/schemas/CollectionModelAccount"
+                  "type": "string"
                 }
               }
             }
@@ -61,10 +61,11 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Account"
+                "$ref": "#/components/schemas/AccountRequestBody"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "201": {
@@ -72,7 +73,7 @@
             "content": {
               "application/hal+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RepresentationModelAccount"
+                  "$ref": "#/components/schemas/EntityModelAccount"
                 }
               }
             }
@@ -106,7 +107,7 @@
             "content": {
               "application/hal+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CollectionModelAccount"
+                  "$ref": "#/components/schemas/CollectionModelEntityModelAccount"
                 }
               }
             }
@@ -180,10 +181,11 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Account"
+                "$ref": "#/components/schemas/AccountRequestBody"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
@@ -191,7 +193,7 @@
             "content": {
               "application/hal+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RepresentationModelAccount"
+                  "$ref": "#/components/schemas/EntityModelAccount"
                 }
               }
             }
@@ -201,7 +203,7 @@
             "content": {
               "application/hal+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RepresentationModelAccount"
+                  "$ref": "#/components/schemas/EntityModelAccount"
                 }
               }
             }
@@ -266,10 +268,11 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Account"
+                "$ref": "#/components/schemas/AccountRequestBody"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
@@ -277,7 +280,7 @@
             "content": {
               "application/hal+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RepresentationModelAccount"
+                  "$ref": "#/components/schemas/EntityModelAccount"
                 }
               }
             }
@@ -298,7 +301,7 @@
         "tags": [
           "The account Repository"
         ],
-        "description": "get-account",
+        "description": "get-customer-by-account-Id",
         "operationId": "followPropertyReference-account-get_1",
         "parameters": [
           {
@@ -316,12 +319,12 @@
             "content": {
               "application/hal+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RepresentationModelAccount"
+                  "$ref": "#/components/schemas/EntityModelCustomer"
                 }
               },
               "text/uri-list": {
                 "schema": {
-                  "$ref": "#/components/schemas/RepresentationModelAccount"
+                  "type": "string"
                 }
               }
             }
@@ -340,7 +343,7 @@
         "tags": [
           "The account Repository"
         ],
-        "description": "update-account",
+        "description": "update-customer-by-account-Id",
         "operationId": "createPropertyReference-account-put",
         "parameters": [
           {
@@ -366,10 +369,11 @@
             },
             "text/uri-list": {
               "schema": {
-                "$ref": "#/components/schemas/CollectionModelObject"
+                "type": "string"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
@@ -377,7 +381,7 @@
             "content": {
               "application/hal+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RepresentationModelAccount"
+                  "$ref": "#/components/schemas/EntityModelCustomer"
                 }
               }
             }
@@ -387,7 +391,7 @@
             "content": {
               "application/hal+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RepresentationModelAccount"
+                  "$ref": "#/components/schemas/EntityModelCustomer"
                 }
               }
             }
@@ -406,7 +410,7 @@
         "tags": [
           "The account Repository"
         ],
-        "description": "delete-account",
+        "description": "delete-customer-by-account-Id",
         "operationId": "deletePropertyReference-account-delete",
         "parameters": [
           {
@@ -436,7 +440,7 @@
         "tags": [
           "The account Repository"
         ],
-        "description": "patch-account",
+        "description": "patch-customer-by-account-Id",
         "operationId": "createPropertyReference-account-patch",
         "parameters": [
           {
@@ -462,10 +466,11 @@
             },
             "text/uri-list": {
               "schema": {
-                "$ref": "#/components/schemas/CollectionModelObject"
+                "type": "string"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
@@ -473,7 +478,7 @@
             "content": {
               "application/hal+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RepresentationModelAccount"
+                  "$ref": "#/components/schemas/EntityModelCustomer"
                 }
               }
             }
@@ -494,7 +499,7 @@
         "tags": [
           "The account Repository"
         ],
-        "description": "get-account",
+        "description": "get-customer-by-account-Id",
         "operationId": "followPropertyReference-account-get",
         "parameters": [
           {
@@ -520,7 +525,7 @@
             "content": {
               "application/hal+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RepresentationModelAccount"
+                  "$ref": "#/components/schemas/EntityModelCustomer"
                 }
               }
             }
@@ -539,7 +544,7 @@
         "tags": [
           "The account Repository"
         ],
-        "description": "delete-account",
+        "description": "delete-customer-by-account-Id",
         "operationId": "deletePropertyReferenceId-account-delete",
         "parameters": [
           {
@@ -587,17 +592,17 @@
             "content": {
               "application/hal+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CollectionModelCustomer"
+                  "$ref": "#/components/schemas/CollectionModelEntityModelCustomer"
                 }
               },
               "application/x-spring-data-compact+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CollectionModelCustomer"
+                  "$ref": "#/components/schemas/CollectionModelEntityModelCustomer"
                 }
               },
               "text/uri-list": {
                 "schema": {
-                  "$ref": "#/components/schemas/CollectionModelCustomer"
+                  "type": "string"
                 }
               }
             }
@@ -614,10 +619,11 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Customer"
+                "$ref": "#/components/schemas/CustomerRequestBody"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "201": {
@@ -625,7 +631,7 @@
             "content": {
               "application/hal+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RepresentationModelCustomer"
+                  "$ref": "#/components/schemas/EntityModelCustomer"
                 }
               }
             }
@@ -655,7 +661,7 @@
             "schema": {
               "minimum": 0,
               "type": "integer",
-              "default": "0"
+              "default": 0
             }
           },
           {
@@ -666,7 +672,7 @@
             "schema": {
               "minimum": 1,
               "type": "integer",
-              "default": "20"
+              "default": 20
             }
           },
           {
@@ -688,7 +694,7 @@
             "content": {
               "application/hal+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PagedModelCustomer"
+                  "$ref": "#/components/schemas/PagedModelEntityModelCustomer"
                 }
               }
             }
@@ -696,7 +702,12 @@
           "404": {
             "description": "Not Found"
           }
-        }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
       }
     },
     "/customers/{id}": {
@@ -752,10 +763,11 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Customer"
+                "$ref": "#/components/schemas/CustomerRequestBody"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
@@ -763,7 +775,7 @@
             "content": {
               "application/hal+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RepresentationModelCustomer"
+                  "$ref": "#/components/schemas/EntityModelCustomer"
                 }
               }
             }
@@ -773,7 +785,7 @@
             "content": {
               "application/hal+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RepresentationModelCustomer"
+                  "$ref": "#/components/schemas/EntityModelCustomer"
                 }
               }
             }
@@ -803,10 +815,11 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Customer"
+                "$ref": "#/components/schemas/CustomerRequestBody"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
@@ -814,7 +827,7 @@
             "content": {
               "application/hal+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RepresentationModelCustomer"
+                  "$ref": "#/components/schemas/EntityModelCustomer"
                 }
               }
             }
@@ -850,7 +863,7 @@
         "tags": [
           "profile-controller"
         ],
-        "operationId": "descriptor_1",
+        "operationId": "descriptor_1_1_1",
         "responses": {
           "200": {
             "description": "OK",
@@ -880,7 +893,7 @@
         "tags": [
           "profile-controller"
         ],
-        "operationId": "descriptor_2",
+        "operationId": "descriptor_1_1_2",
         "responses": {
           "200": {
             "description": "OK",
@@ -974,44 +987,15 @@
           }
         }
       },
+      "Links": {
+        "type": "object",
+        "additionalProperties": {
+          "$ref": "#/components/schemas/Link"
+        }
+      },
       "RepresentationModelObject": {
         "type": "object",
         "properties": {
-          "_links": {
-            "$ref": "#/components/schemas/Links"
-          }
-        }
-      },
-      "Account": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "customer": {
-            "$ref": "#/components/schemas/Customer"
-          },
-          "expiryDate": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      },
-      "CollectionModelAccount": {
-        "type": "object",
-        "properties": {
-          "_embedded": {
-            "type": "object",
-            "properties": {
-              "accounts": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/Account"
-                }
-              }
-            }
-          },
           "_links": {
             "$ref": "#/components/schemas/Links"
           }
@@ -1032,22 +1016,9 @@
           }
         }
       },
-      "Links": {
-        "type": "object",
-        "additionalProperties": {
-          "$ref": "#/components/schemas/Link"
-        }
-      },
       "EntityModelAccount": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "customer": {
-            "$ref": "#/components/schemas/Customer"
-          },
           "expiryDate": {
             "type": "string",
             "format": "date-time"
@@ -1057,9 +1028,34 @@
           }
         }
       },
-      "RepresentationModelAccount": {
+      "CollectionModelEntityModelAccount": {
         "type": "object",
         "properties": {
+          "_embedded": {
+            "type": "object",
+            "properties": {
+              "accounts": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/EntityModelAccount"
+                }
+              }
+            }
+          },
+          "_links": {
+            "$ref": "#/components/schemas/Links"
+          }
+        }
+      },
+      "EntityModelCustomer": {
+        "type": "object",
+        "properties": {
+          "firstname": {
+            "type": "string"
+          },
+          "lastname": {
+            "type": "string"
+          },
           "_links": {
             "$ref": "#/components/schemas/Links"
           }
@@ -1084,7 +1080,7 @@
           }
         }
       },
-      "CollectionModelCustomer": {
+      "CollectionModelEntityModelCustomer": {
         "type": "object",
         "properties": {
           "_embedded": {
@@ -1093,7 +1089,7 @@
               "customers": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/Customer"
+                  "$ref": "#/components/schemas/EntityModelCustomer"
                 }
               }
             }
@@ -1103,33 +1099,7 @@
           }
         }
       },
-      "EntityModelCustomer": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "firstname": {
-            "type": "string"
-          },
-          "lastname": {
-            "type": "string"
-          },
-          "_links": {
-            "$ref": "#/components/schemas/Links"
-          }
-        }
-      },
-      "RepresentationModelCustomer": {
-        "type": "object",
-        "properties": {
-          "_links": {
-            "$ref": "#/components/schemas/Links"
-          }
-        }
-      },
-      "PageMetadataCustomer": {
+      "PageMetadata": {
         "type": "object",
         "properties": {
           "size": {
@@ -1150,7 +1120,7 @@
           }
         }
       },
-      "PagedModelCustomer": {
+      "PagedModelEntityModelCustomer": {
         "type": "object",
         "properties": {
           "_embedded": {
@@ -1159,7 +1129,7 @@
               "customers": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/Customer"
+                  "$ref": "#/components/schemas/EntityModelCustomer"
                 }
               }
             }
@@ -1168,7 +1138,38 @@
             "$ref": "#/components/schemas/Links"
           },
           "page": {
-            "$ref": "#/components/schemas/PageMetadataCustomer"
+            "$ref": "#/components/schemas/PageMetadata"
+          }
+        }
+      },
+      "AccountRequestBody": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "customer": {
+            "type": "string"
+          },
+          "expiryDate": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CustomerRequestBody": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "firstname": {
+            "type": "string"
+          },
+          "lastname": {
+            "type": "string"
           }
         }
       },

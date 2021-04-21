@@ -116,10 +116,13 @@ public class QuerydslPredicateOperationCustomizer implements OperationCustomizer
 			fieldsToAdd.addAll(aliases);
 			fieldsToAdd.addAll(whiteList);
 
-			boolean excludeUnlistedProperties = getFieldValueOfBoolean(bindings, "excludeUnlistedProperties");
+			// if only listed properties should be included, remove all other fields from fieldsToAdd
+			if (getFieldValueOfBoolean(bindings, "excludeUnlistedProperties")) {
+				fieldsToAdd.removeIf(s -> !whiteList.contains(s) && !aliases.contains(s) );
+			}
 
 			for (String fieldName : fieldsToAdd) {
-				Type type = getFieldType(fieldName, pathSpecMap, predicate.root(), excludeUnlistedProperties);
+				Type type = getFieldType(fieldName, pathSpecMap, predicate.root());
 				if (type != null) {
 					Parameter newParameter = buildParam(type, fieldName);
 					parametersToAddToOperation.add(newParameter);
@@ -133,8 +136,8 @@ public class QuerydslPredicateOperationCustomizer implements OperationCustomizer
 	/**
 	 * Gets field value of boolean.
 	 *
-	 * @param instance the instance
-	 * @param fieldName the field name
+	 * @param instance the instance  
+	 * @param fieldName the field name  
 	 * @return the field value of boolean
 	 */
 	private boolean getFieldValueOfBoolean(QuerydslBindings instance, String fieldName) {
@@ -152,7 +155,7 @@ public class QuerydslPredicateOperationCustomizer implements OperationCustomizer
 	/**
 	 * Extract qdsl bindings querydsl bindings.
 	 *
-	 * @param predicate the predicate
+	 * @param predicate the predicate  
 	 * @return the querydsl bindings
 	 */
 	private QuerydslBindings extractQdslBindings(QuerydslPredicate predicate) {
@@ -171,9 +174,9 @@ public class QuerydslPredicateOperationCustomizer implements OperationCustomizer
 	/**
 	 * Gets field values.
 	 *
-	 * @param instance the instance
-	 * @param fieldName the field name
-	 * @param alternativeFieldName the alternative field name
+	 * @param instance the instance  
+	 * @param fieldName the field name  
+	 * @param alternativeFieldName the alternative field name  
 	 * @return the field values
 	 */
 	private Set<String> getFieldValues(QuerydslBindings instance, String fieldName, String alternativeFieldName) {
@@ -193,8 +196,8 @@ public class QuerydslPredicateOperationCustomizer implements OperationCustomizer
 	/**
 	 * Gets path spec.
 	 *
-	 * @param instance the instance
-	 * @param fieldName the field name
+	 * @param instance the instance  
+	 * @param fieldName the field name  
 	 * @return the path spec
 	 */
 	private Map<String, Object> getPathSpec(QuerydslBindings instance, String fieldName) {
@@ -211,7 +214,7 @@ public class QuerydslPredicateOperationCustomizer implements OperationCustomizer
 	/**
 	 * Gets path from path spec.
 	 *
-	 * @param instance the instance
+	 * @param instance the instance  
 	 * @return the path from path spec
 	 */
 	private Optional<Path<?>> getPathFromPathSpec(Object instance) {
@@ -230,13 +233,12 @@ public class QuerydslPredicateOperationCustomizer implements OperationCustomizer
 
 	/***
 	 * Tries to figure out the Type of the field. It first checks the Qdsl pathSpecMap before checking the root class. Defaults to String.class
-	 * @param fieldName The name of the field used as reference to get the type
-	 * @param pathSpecMap The Qdsl path specifications as defined in the resolved bindings
+	 * @param fieldName The name of the field used as reference to get the type  
+	 * @param pathSpecMap The Qdsl path specifications as defined in the resolved bindings  
 	 * @param root The root type where the paths are gotten
-	 * @param excludeUnlistedProperties the exclude unlisted properties
 	 * @return The type of the field. Returns
 	 */
-	private Type getFieldType(String fieldName, Map<String, Object> pathSpecMap, Class<?> root, boolean excludeUnlistedProperties) {
+	private Type getFieldType(String fieldName, Map<String, Object> pathSpecMap, Class<?> root) {
 		Type genericType = null;
 		try {
 			Object pathAndBinding = pathSpecMap.get(fieldName);
@@ -244,7 +246,7 @@ public class QuerydslPredicateOperationCustomizer implements OperationCustomizer
 			Field declaredField;
 			if (path.isPresent()) {
 				genericType = path.get().getType();
-			} else if (!excludeUnlistedProperties) {
+			} else {
 				declaredField = root.getDeclaredField(fieldName);
 				genericType = declaredField.getGenericType();
 			}
@@ -257,8 +259,8 @@ public class QuerydslPredicateOperationCustomizer implements OperationCustomizer
 
 	/***
 	 * Constructs the parameter
-	 * @param type The type of the parameter
-	 * @param name The name of the parameter
+	 * @param type The type of the parameter  
+	 * @param name The name of the parameter  
 	 * @return The swagger parameter
 	 */
 	private io.swagger.v3.oas.models.parameters.Parameter buildParam(Type type, String name) {
@@ -273,7 +275,7 @@ public class QuerydslPredicateOperationCustomizer implements OperationCustomizer
 		}
 
 		if (parameter.getSchema() == null) {
-			Schema<?> schema = null;
+			Schema<?> schema ;
 			PrimitiveType primitiveType = PrimitiveType.fromType(type);
 			if (primitiveType != null) {
 				schema = primitiveType.createProperty();

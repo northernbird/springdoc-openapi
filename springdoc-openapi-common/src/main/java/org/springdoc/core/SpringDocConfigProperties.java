@@ -128,6 +128,11 @@ public class SpringDocConfigProperties {
 	private boolean writerWithDefaultPrettyPrinter;
 
 	/**
+	 * The Writer with order by keys.
+	 */
+	private boolean writerWithOrderByKeys;
+
+	/**
 	 * The Default consumes media type.
 	 */
 	private String defaultConsumesMediaType = MediaType.APPLICATION_JSON_VALUE;
@@ -152,6 +157,28 @@ public class SpringDocConfigProperties {
 	 */
 	private boolean preLoadingEnabled;
 
+	/**
+	 * If set to true, exposes the swagger-ui on the actuator management port.
+	 */
+	private boolean useManagementPort;
+
+	/**
+	 * Is use management port boolean.
+	 *
+	 * @return the boolean
+	 */
+	public boolean isUseManagementPort() {
+		return useManagementPort;
+	}
+
+	/**
+	 * Sets use management port.
+	 *
+	 * @param useManagementPort the use management port
+	 */
+	public void setUseManagementPort(boolean useManagementPort) {
+		this.useManagementPort = useManagementPort;
+	}
 
 	/**
 	 * Gets produces to match.
@@ -529,6 +556,24 @@ public class SpringDocConfigProperties {
 	 */
 	public void setRemoveBrokenReferenceDefinitions(boolean removeBrokenReferenceDefinitions) {
 		this.removeBrokenReferenceDefinitions = removeBrokenReferenceDefinitions;
+	}
+
+	/**
+	 * Is writer wither order by keys boolean.
+	 *
+	 * @return the boolean
+	 */
+	public boolean isWriterWithOrderByKeys() {
+		return writerWithOrderByKeys;
+	}
+
+	/**
+	 * Sets writer wither order by keys.
+	 *
+	 * @param writerWithOrderByKeys the writer wither order by keys
+	 */
+	public void setWriterWithOrderByKeys(boolean writerWithOrderByKeys) {
+		this.writerWithOrderByKeys = writerWithOrderByKeys;
 	}
 
 	/**

@@ -2,16 +2,24 @@
 [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=springdoc_springdoc-openapi&metric=alert_status)](https://sonarcloud.io/dashboard?id=springdoc_springdoc-openapi)
 [![Known Vulnerabilities](https://snyk.io/test/github/springdoc/springdoc-openapi.git/badge.svg)](https://snyk.io/test/github/springdoc/springdoc-openapi.git)
 
-![Octocat](https://springdoc.org/assets/images/springdoc-openapi.png)
+![Octocat](https://springdoc.org/images/springdoc-openapi.png)
 
 # [Full documentation](https://springdoc.org)
+
+# Acknowledgements
+
+[springdoc-openapi is made possible thanks to all of its contributors.](https://github.com/springdoc/springdoc-openapi/graphs/contributors)
+
+<a href="https://github.com/springdoc/springdoc-openapi/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=springdoc/springdoc-openapi" />
+</a>
 
 # **Introduction**
 
 The springdoc-openapi Java library helps automating the generation of API documentation using Spring Boot projects.
 springdoc-openapi works by examining an application at runtime to infer API semantics based on Spring configurations, class structure and various annotations.
 
-The library automatically generates documentation in JSON/YAML and HTML formatted pages. The generateed documentation can be complemented using `swagger-api` annotations.
+The library automatically generates documentation in JSON/YAML and HTML formatted pages. The generated documentation can be complemented using `swagger-api` annotations.
 
 This library supports:
 *  OpenAPI 3
@@ -52,15 +60,19 @@ This is a community-based project, not maintained by the Spring Framework Contri
 springdoc.swagger-ui.path=/swagger-ui.html
 ```
 
-## [Demo Spring Boot 2 Web MVC with OpenAPI 3](https://springdoc-openapi-test-app2-rested-ardvark.eu-de.mybluemix.net/).
-## [Demo Spring Boot 2 WebFlux with OpenAPI 3](https://springdoc-openapi-test-app3-generous-springhare.eu-de.mybluemix.net/swagger-ui.html).
-## [Demo Spring Boot 1 Web MVC with OpenAPI 3](https://springdoc-openapi-test-app1-exhausted-civet.eu-de.mybluemix.net/).
-## [Demo Spring Boot 2 WebFlux with Functional endpoints OpenAPI 3](https://springdoc-openapi-test-app4-happy-ostrich.eu-de.mybluemix.net/swagger-ui.html).
-
-![Branching](https://springdoc.org/assets/images/pets.png)
-
 ## Source code of the Demo Applications
 * [https://github.com/springdoc/springdoc-openapi-demos.git](https://github.com/springdoc/springdoc-openapi-demos.git).
+
+
+## Spring-boot with OpenAPI Demo applications.
+
+## [Demo Spring Boot 2 Web MVC with OpenAPI 3](http://158.101.164.60:8081/).
+## [Demo Spring Boot 2 WebFlux with OpenAPI 3](http://158.101.164.60:8082/).
+## [Demo Spring Boot 1 Web MVC with OpenAPI 3](http://158.101.164.60:8083/).
+## [Demo Spring Boot 2 WebFlux with Functional endpoints OpenAPI 3](http://158.101.164.60:8084/swagger-ui.html).
+## [Demo Spring Boot 2 and Spring Hateoas with OpenAPI 3](http://158.101.164.60:8085/swagger-ui.html).
+
+![Branching](https://springdoc.org/images/pets.png)
 
 ## Integration of the library in a Spring Boot 2.x.x project without the swagger-ui:
 *   Documentation will be available at the following url for json format: http://server:port/context-path/v3/api-docs
@@ -126,4 +138,8 @@ Releases:
 Snapshots:
 * [https://oss.sonatype.org/content/repositories/snapshots/org/springdoc/](https://oss.sonatype.org/content/repositories/snapshots/org/springdoc/).
 
+# **Thank you for the support**
 
+* Thanks a lot [JetBrains](https://www.jetbrains.com/?from=springdoc-openapi) for supporting springdoc-openapi project.
+
+![JenBrains logo](https://springdoc.org/images/jetbrains.svg)

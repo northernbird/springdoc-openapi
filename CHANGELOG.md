@@ -4,6 +4,120 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.7] - 2021-04-09
+### Added
+- #1110 - Add configuration flag for tryItOutEnabled
+- #1128 - Add support for Generic fields in ParameterObject are not resolved 
+### Changed
+- Upgrade swagger-ui version to 3.46.0
+### Fixed
+- #1109 - webflux: contextPath not used while behind a load balancer/reverse proxy.
+- #1122 - StackOverflowError when using Kotlin companion object's field
+- #1125 - Multiple @SecurityScheme inside a @SecuritySchemes are not present in the openapi spec
+- #1134 - NoClassDefFoundError: WebFluxProperties$Format.
+
+## [1.5.6] - 2021-03-16
+### Added
+- #1107 - use HTTP 302 status for UI redirect 
+- #1104 - switch from 'redirect:' prefix to ResponseEntity for redirecting UI index 
+- #1085 - enable recalculating oauth2 redirect url while cache is disable
+### Changed
+- Upgrade swagger-ui version to: 3.45.0
+- Upgrade swagger-core to v2.1.7
+### Fixed
+- #1081 - Spring Data Rest: RequestBody for POST, PUT, PATCH should be required.
+- #1082 - Spring Data Rest: Wrong schema for request body in association controllers. 
+- #1083 - Spring Data Rest: No model for Paged Collection. 
+- #1082 - Spring Data Rest: Wrong schema for request body in association controllers. 
+- #1084 - Spring Data Rest: Relations to exported Repositories are handled as if they were embedded. 
+- #1095 - Spring Data Rest: Exception while generating api doc with inheritance
+- #1098 - NullPointerException: Cannot invoke "java.util.Map.forEach(java.util.function.BiConsumer)" because "properties" is null. 
+- #1097 - ConversionFailedException: When accessing v3/api-docs. 
+- #1105 - Collection methods are added to the supported entity methods.  
+- #1106 - Required `multipart/form-data` parameters not reflected in generated schema. 
+- #1096 - Fix certain `WebConversionServiceProvider#convert` calls by supplying contextual information
+ 
+## [1.5.5] - 2021-02-28
+### Added
+- #1050 - Add support for addPathPrefix with Webflux swagger-ui. 
+- #1059 - Support per method security requirement in RepositoryRestResource. 
+### Changed
+- Upgrade versions: spring-boot to 2.4.3 and swagger-ui to 3.44
+### Fixed
+- #1068 - Spring Data Rest: Wrong response schema after POST,PUT,PATCH operations.  
+- #1073 - Springdocs doesn't detect header declarations in class level `@RequestMapping`s.
+- #1069 - Spring Data Rest: Wrong response schema for collection relations. 
+- #1070 - Spring Data Rest: Collection models generated with non-HAL content.
+- #1075 - QuerydslBinderCustomizer alias being removed when using excludeUnlistedProperties. 
+
+## [1.5.4] - 2021-02-10
+### Added
+- #1053 - Add @RepositoryRestController documentation generation
+### Changed
+- Upgrade versions: swagger-ui to 3.42.0
+### Fixed
+- #1051 - IllegalStateException in org.springdoc.core.SpringDocConfiguration$OpenApiResourceAdvice.handleNoHandlerFound
+- #1047 - swaggerWelcome `WebFluxProperties' that could not be found
+
+## [1.5.3] - 2021-01-26
+### Added
+- Added Support for spring.webflux.base-path
+- #965,#1034 - Improve compatibility with new PathMatcher / PathPatternParser
+- #1012 - Forward queryParameters to swagger-ui when redirecting
+- #1020 - Change handler methods scanning strategy
+- #1026 - Support for @Operation in @RepositoryRestResource Spring Data Repositories.
+- #1027 - Detect automatically @Controller with @Operation. 
+### Changed
+- Upgrade versions: spring-boot to 2.4.2 and swagger-ui to 3.40
+### Fixed
+- #996 - Fix NPE when using management port and spring.application.name is set
+- #1004 - NPE in DataRestResponseService.findSearchReturnType
+- #1015 - Default value for List/Array RequestParameter has wrong type.
+- #1010 - Wrong Parameter Name with Default Sort.
+- #1014 - HATOEAS Links produces a circular reference.
+- #1035 - oauth2 redirect url calculated incorrectly when springdoc.swagger-ui.path=/ 
+
+## [1.5.2] - 2020-12-16 
+### Added
+- #978 - Add explode support in combination with arrayShema annotation
+### Changed
+- Update swagger-ui to 3.38.0
+### Fixed
+- #985 - StackOverflowError when using ObjectId with @ParameterObject
+- #980, #968 - Functional DSL incorrect path mapping
+
+## [1.5.1] - 2020-12-07 
+### Added
+- #923 - Exposing swagger-ui on the management port.
+- #938 - Swagger-UI Property persistAuthorization. 
+### Changed
+- Update swagger-core to v2.1.6
+- Update swagger-ui to 3.37.2
+### Fixed
+- #973 - Nullable meta annotations are ignored
+- #971 - WebFlux functional DSL does not recognise query parameters. 
+- #962 - NPE within AbstractRequestService
+- #948 - Swagger ui syntax highlighting configuration properties do not autocomplete.
+
+## [1.5.0] - 2020-11-14 
+### Added
+- #891 - Provide a WebMvc.fn / WebFlux.fn functional DSL 
+- #904 - Add support for placeholders for default value in @RequestParam Annotation.
+- Added property for deterministic and alphabetical orderding: springdoc.writer-with-order-by-keys
+- Removal of deprecated method: GroupedOpenApi.setGroup
+### Changed
+- Upgrade to Swagger-core 2.1.5
+- Upgrade swagger-ui version to 3.36.2
+- Upgrade to spring-boot v2.4.0
+### Fixed
+- #889 - fix for flaky operationIds
+- #893 - Generate empty `scopes` object
+- #925 - Always add all properties to include if excludeUnlistedProperties=true
+- #920 - Define explicitly metadata for springdoc.swagger-ui.enabled
+- #907 - Hidden controller showing up in swagger UI when springdoc.show-actuator is enabled
+- #885 - Flaky operationIds for controller-methods with same name 
+- #688, #349, #545 - swagger-config not being loaded twice out of the box, thanks to the swagger-ui v3.36.0.
+
 ## [1.4.8] - 2020-09-27
 ### Added
 - #878, #449 - Add options to filter on the GroupedOpenApi by consumes/produces mediaTypes or by header
@@ -95,7 +209,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - #744 - Impossible to configure swaggerurl programmatically 
 
 ## [1.4.1] - 2020-06-09
-### Addedgrr
+### Added
 - #714 - Ability to disable swagger-ui default petstore url
 - #713 - Add Support of Actuator endpoints using webflux
 - #703 - Pretty print OpenApi spec 

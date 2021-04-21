@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>org.springdoc</groupId>
 		<artifactId>springdoc-openapi</artifactId>
-		<version>1.4.9-SNAPSHOT</version>
+		<version>1.5.8-SNAPSHOT</version>
 	</parent>
 	<artifactId>springdoc-openapi-ui</artifactId>
 	<dependencies>
@@ -32,5 +32,31 @@
 			<artifactId>spring-boot-starter-security</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- Actuator dependencies -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-core</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<Automatic-Module-Name>org.springdoc.openapi.ui</Automatic-Module-Name>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>

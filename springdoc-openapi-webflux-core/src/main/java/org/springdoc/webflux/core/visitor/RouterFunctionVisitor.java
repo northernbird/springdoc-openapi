@@ -20,10 +20,10 @@
 
 package org.springdoc.webflux.core.visitor;
 
+import java.util.ArrayList;
 import java.util.function.Function;
 
 import org.springdoc.core.fn.AbstractRouterFunctionVisitor;
-import org.springdoc.core.fn.RouterFunctionData;
 import reactor.core.publisher.Mono;
 
 import org.springframework.core.io.Resource;
@@ -42,20 +42,20 @@ public class RouterFunctionVisitor extends AbstractRouterFunctionVisitor impleme
 
 	@Override
 	public void route(RequestPredicate predicate, HandlerFunction<?> handlerFunction) {
-		this.routerFunctionData = new RouterFunctionData();
-		routerFunctionDatas.add(this.routerFunctionData);
+		this.currentRouterFunctionDatas = new ArrayList<>();
 		predicate.accept(this);
+		commonRoute();
 	}
 
 	@Override
 	public void startNested(RequestPredicate predicate) {
-		this.isNested = true;
+		commonStartNested();
 		predicate.accept(this);
 	}
 
 	@Override
 	public void endNested(RequestPredicate predicate) {
-		computeNested();
+		commonEndNested();
 	}
 
 	@Override

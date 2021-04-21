@@ -60,6 +60,28 @@ public class SwaggerUiConfigProperties extends AbstractSwaggerUiConfigProperties
 	 */
 	private Csrf csrf = new Csrf();
 
+	/**
+	 * Whether to generate and serve an OpenAPI document.
+	 */
+	private boolean enabled = true;
+
+	/**
+	 * Is enabled boolean.
+	 *
+	 * @return the boolean
+	 */
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	/**
+	 * Sets enabled.
+	 *
+	 * @param enabled the enabled
+	 */
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
 
 	/**
 	 * The type Csrf.
@@ -217,4 +239,55 @@ public class SwaggerUiConfigProperties extends AbstractSwaggerUiConfigProperties
 		return csrf.isEnabled();
 	}
 
+	/**
+	 * The type Syntax highlight.
+	 */
+	public static class SyntaxHighlight{
+
+		/**
+		 * The Activated.
+		 */
+		private Boolean activated;
+
+		/**
+		 * The Theme.
+		 */
+		private String theme;
+
+		/**
+		 * Gets activated.
+		 *
+		 * @return the activated
+		 */
+		public Boolean getActivated() {
+			return activated;
+		}
+
+		/**
+		 * Sets activated.
+		 *
+		 * @param activated the activated
+		 */
+		public void setActivated(Boolean activated) {
+			this.activated = activated;
+		}
+
+		/**
+		 * Gets theme.
+		 *
+		 * @return the theme
+		 */
+		public String getTheme() {
+			return theme;
+		}
+
+		/**
+		 * Sets theme.
+		 *
+		 * @param theme the theme
+		 */
+		public void setTheme(String theme) {
+			this.theme = theme;
+		}
+	}
 }

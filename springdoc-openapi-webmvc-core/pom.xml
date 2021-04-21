@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>org.springdoc</groupId>
 		<artifactId>springdoc-openapi</artifactId>
-		<version>1.4.9-SNAPSHOT</version>
+		<version>1.5.8-SNAPSHOT</version>
 	</parent>
 	<artifactId>springdoc-openapi-webmvc-core</artifactId>
 	<dependencies>
@@ -38,5 +38,25 @@
 			<artifactId>hibernate-validator</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-core</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<Automatic-Module-Name>org.springdoc.openapi.webmvc.core</Automatic-Module-Name>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>

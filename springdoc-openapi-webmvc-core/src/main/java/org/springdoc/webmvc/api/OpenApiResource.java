@@ -20,56 +20,59 @@
 
 package org.springdoc.webmvc.api;
 
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.swagger.v3.core.util.Json;
 import io.swagger.v3.core.util.PathUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.models.OpenAPI;
 import org.springdoc.api.AbstractOpenApiResource;
-import org.springdoc.core.AbstractRequestBuilder;
+import org.springdoc.core.AbstractRequestService;
 import org.springdoc.core.ActuatorProvider;
-import org.springdoc.core.GenericResponseBuilder;
-import org.springdoc.core.OpenAPIBuilder;
-import org.springdoc.core.OperationBuilder;
+import org.springdoc.core.GenericResponseService;
+import org.springdoc.core.OpenAPIService;
+import org.springdoc.core.OperationService;
 import org.springdoc.core.RepositoryRestResourceProvider;
 import org.springdoc.core.SecurityOAuth2Provider;
 import org.springdoc.core.SpringDocConfigProperties;
 import org.springdoc.core.customizers.OpenApiCustomiser;
 import org.springdoc.core.customizers.OperationCustomizer;
 import org.springdoc.core.fn.RouterOperation;
+import org.springdoc.webmvc.core.RouterFunctionProvider;
 
 import org.springframework.beans.factory.ObjectFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.http.MediaType;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.MimeType;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.condition.PathPatternsRequestCondition;
 import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping;
 
-import static org.springdoc.core.Constants.API_DOCS_URL;
-import static org.springdoc.core.Constants.APPLICATION_OPENAPI_YAML;
-import static org.springdoc.core.Constants.DEFAULT_API_DOCS_URL_YAML;
+import static org.springdoc.core.ActuatorProvider.getTag;
 import static org.springdoc.core.Constants.DEFAULT_GROUP_NAME;
 import static org.springframework.util.AntPathMatcher.DEFAULT_PATH_SEPARATOR;
 
 /**
- * The type Open api resource.
- * @author bnasslahsen
+ * The type Web mvc open api resource.
+ * @author bnasslahsen, Azige
  */
-@RestController
-public class OpenApiResource extends AbstractOpenApiResource {
+public abstract class OpenApiResource extends AbstractOpenApiResource {
 
 	/**
 	 * The Request mapping handler mapping.
@@ -108,8 +111,8 @@ public class OpenApiResource extends AbstractOpenApiResource {
 	 * @param routerFunctionProvider the router function provider
 	 * @param repositoryRestResourceProvider the repository rest resource provider
 	 */
-	public OpenApiResource(String groupName, ObjectFactory<OpenAPIBuilder> openAPIBuilderObjectFactory, AbstractRequestBuilder requestBuilder,
-			GenericResponseBuilder responseBuilder, OperationBuilder operationParser,
+	public OpenApiResource(String groupName, ObjectFactory<OpenAPIService> openAPIBuilderObjectFactory, AbstractRequestService requestBuilder,
+			GenericResponseService responseBuilder, OperationService operationParser,
 			RequestMappingInfoHandlerMapping requestMappingHandlerMapping,
 			Optional<ActuatorProvider> actuatorProvider,
 			Optional<List<OperationCustomizer>> operationCustomizers,
@@ -141,9 +144,8 @@ public class OpenApiResource extends AbstractOpenApiResource {
 	 * @param routerFunctionProvider the router function provider
 	 * @param repositoryRestResourceProvider the repository rest resource provider
 	 */
-	@Autowired
-	public OpenApiResource(ObjectFactory<OpenAPIBuilder> openAPIBuilderObjectFactory, AbstractRequestBuilder requestBuilder,
-			GenericResponseBuilder responseBuilder, OperationBuilder operationParser,
+	public OpenApiResource(ObjectFactory<OpenAPIService> openAPIBuilderObjectFactory, AbstractRequestService requestBuilder,
+			GenericResponseService responseBuilder, OperationService operationParser,
 			RequestMappingInfoHandlerMapping requestMappingHandlerMapping,
 			Optional<ActuatorProvider> actuatorProvider,
 			Optional<List<OperationCustomizer>> operationCustomizers,
@@ -167,16 +169,12 @@ public class OpenApiResource extends AbstractOpenApiResource {
 	 * @return the string
 	 * @throws JsonProcessingException the json processing exception
 	 */
-	@Operation(hidden = true)
-	@GetMapping(value = API_DOCS_URL, produces = MediaType.APPLICATION_JSON_VALUE)
-	public String openapiJson(HttpServletRequest request, @Value(API_DOCS_URL) String apiDocsUrl)
+	public String openapiJson(HttpServletRequest request,
+			String apiDocsUrl)
 			throws JsonProcessingException {
 		calculateServerUrl(request, apiDocsUrl);
 		OpenAPI openAPI = this.getOpenApi();
-		if (!springDocConfigProperties.isWriterWithDefaultPrettyPrinter())
-			return Json.mapper().writeValueAsString(openAPI);
-		else
-			return Json.mapper().writerWithDefaultPrettyPrinter().writeValueAsString(openAPI);
+		return writeJsonValue(openAPI);
 	}
 
 	/**
@@ -187,27 +185,36 @@ public class OpenApiResource extends AbstractOpenApiResource {
 	 * @return the string
 	 * @throws JsonProcessingException the json processing exception
 	 */
-	@Operation(hidden = true)
-	@GetMapping(value = DEFAULT_API_DOCS_URL_YAML, produces = APPLICATION_OPENAPI_YAML)
-	public String openapiYaml(HttpServletRequest request, @Value(DEFAULT_API_DOCS_URL_YAML) String apiDocsUrl)
+	public String openapiYaml(HttpServletRequest request,
+			String apiDocsUrl)
 			throws JsonProcessingException {
 		calculateServerUrl(request, apiDocsUrl);
 		OpenAPI openAPI = this.getOpenApi();
-		if (!springDocConfigProperties.isWriterWithDefaultPrettyPrinter())
-			return getYamlMapper().writeValueAsString(openAPI);
-		else
-			return getYamlMapper().writerWithDefaultPrettyPrinter().writeValueAsString(openAPI);
+		return writeYamlValue(openAPI);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	protected void getPaths(Map<String, Object> restControllers) {
 		Map<RequestMappingInfo, HandlerMethod> map = requestMappingHandlerMapping.getHandlerMethods();
+
+		if (repositoryRestResourceProvider.isPresent()) {
+			RepositoryRestResourceProvider restResourceProvider = this.repositoryRestResourceProvider.get();
+			List<RouterOperation> operationList = restResourceProvider.getRouterOperations(openAPIService.getCalculatedOpenAPI());
+			calculatePath(operationList);
+			restResourceProvider.customize(openAPIService.getCalculatedOpenAPI());
+			Map<RequestMappingInfo, HandlerMethod> mapDataRest = restResourceProvider.getHandlerMethods();
+			Map<String, Object> requestMappingMap =  restResourceProvider.getRepositoryRestControllerEndpoints();
+			Class[] additionalRestClasses = requestMappingMap.values().stream().map(Object::getClass).toArray(Class[]::new);
+			AbstractOpenApiResource.addRestControllers(additionalRestClasses);
+			calculatePath(requestMappingMap, mapDataRest);
+		}
+
 		calculatePath(restControllers, map);
 
-		if (actuatorProvider.isPresent()) {
-			map = actuatorProvider.get().getMethods();
-			this.openAPIBuilder.addTag(new HashSet<>(map.values()), actuatorProvider.get().getTag());
+		if (isShowActuator()) {
+			map = optionalActuatorProvider.get().getMethods();
+			this.openAPIService.addTag(new HashSet<>(map.values()), getTag());
 			calculatePath(restControllers, map);
 		}
 		if (this.springSecurityOAuth2Provider.isPresent()) {
@@ -222,11 +229,6 @@ public class OpenApiResource extends AbstractOpenApiResource {
 		routerFunctionProvider.ifPresent(routerFunctions -> routerFunctions.getWebMvcRouterFunctionPaths()
 				.ifPresent(routerBeans -> routerBeans.forEach(this::getRouterFunctionPaths)));
 
-		if (repositoryRestResourceProvider.isPresent()) {
-			RepositoryRestResourceProvider restResourceProvider = this.repositoryRestResourceProvider.get();
-			List<RouterOperation> operationList = restResourceProvider.getRouterOperations(openAPIBuilder.getCalculatedOpenAPI());
-			calculatePath(operationList);
-		}
 	}
 
 	/**
@@ -241,31 +243,56 @@ public class OpenApiResource extends AbstractOpenApiResource {
 		for (Map.Entry<RequestMappingInfo, HandlerMethod> entry : entries) {
 			RequestMappingInfo requestMappingInfo = entry.getKey();
 			HandlerMethod handlerMethod = entry.getValue();
-			PatternsRequestCondition patternsRequestCondition = requestMappingInfo.getPatternsCondition();
-			Set<String> patterns = patternsRequestCondition.getPatterns();
-			Map<String, String> regexMap = new LinkedHashMap<>();
-			for (String pattern : patterns) {
-				String operationPath = PathUtils.parsePath(pattern, regexMap);
-				String[] produces =  requestMappingInfo.getProducesCondition().getProducibleMediaTypes().stream().map(MimeType::toString).toArray(String[]::new);
-				String[] consumes =  requestMappingInfo.getConsumesCondition().getConsumableMediaTypes().stream().map(MimeType::toString).toArray(String[]::new);
-				String[] headers =  requestMappingInfo.getHeadersCondition().getExpressions().stream().map(Object::toString).toArray(String[]::new);
-				if (((actuatorProvider.isPresent() && actuatorProvider.get().isRestController(operationPath, handlerMethod.getBeanType()))
-						|| isRestController(restControllers, handlerMethod, operationPath))
-						&& isFilterCondition(handlerMethod, operationPath, produces, consumes, headers)) {
-					Set<RequestMethod> requestMethods = requestMappingInfo.getMethodsCondition().getMethods();
-					// default allowed requestmethods
-					if (requestMethods.isEmpty())
-						requestMethods = this.getDefaultAllowedHttpMethods();
-					calculatePath(handlerMethod, operationPath, requestMethods);
+			Set<String> patterns = getActivePatterns(requestMappingInfo);
+			if (!CollectionUtils.isEmpty(patterns)) {
+				Map<String, String> regexMap = new LinkedHashMap<>();
+				for (String pattern : patterns) {
+					String operationPath = PathUtils.parsePath(pattern, regexMap);
+					String[] produces = requestMappingInfo.getProducesCondition().getProducibleMediaTypes().stream().map(MimeType::toString).toArray(String[]::new);
+					String[] consumes = requestMappingInfo.getConsumesCondition().getConsumableMediaTypes().stream().map(MimeType::toString).toArray(String[]::new);
+					String[] headers = requestMappingInfo.getHeadersCondition().getExpressions().stream().map(Object::toString).toArray(String[]::new);
+					if (((isShowActuator() && optionalActuatorProvider.get().isRestController(operationPath, handlerMethod.getBeanType()))
+							|| isRestController(restControllers, handlerMethod, operationPath))
+							&& isFilterCondition(handlerMethod, operationPath, produces, consumes, headers)) {
+						Set<RequestMethod> requestMethods = requestMappingInfo.getMethodsCondition().getMethods();
+						// default allowed requestmethods
+						if (requestMethods.isEmpty())
+							requestMethods = this.getDefaultAllowedHttpMethods();
+						calculatePath(handlerMethod, operationPath, requestMethods);
+					}
 				}
 			}
 		}
 	}
 
+	/**
+	 * Gets active patterns.
+	 *
+	 * @param requestMappingInfo the request mapping info
+	 * @return the active patterns
+	 */
+	public static Set<String> getActivePatterns(RequestMappingInfo requestMappingInfo) {
+		Set<String> patterns = null;
+		PatternsRequestCondition patternsRequestCondition = requestMappingInfo.getPatternsCondition();
+		if (patternsRequestCondition != null)
+			patterns = patternsRequestCondition.getPatterns();
+		else {
+			PathPatternsRequestCondition pathPatternsRequestCondition = requestMappingInfo.getPathPatternsCondition();
+			if (pathPatternsRequestCondition != null)
+				patterns = pathPatternsRequestCondition.getPatternValues();
+		}
+		return patterns;
+	}
+
+	/**
+	 * By reversed request mapping infos comparator.
+	 *
+	 * @return the comparator
+	 */
 	private Comparator<Map.Entry<RequestMappingInfo, HandlerMethod>> byReversedRequestMappingInfos() {
 		return Comparator.<Map.Entry<RequestMappingInfo, HandlerMethod>, String>
-                comparing(a -> a.getKey().toString())
-                .reversed();
+				comparing(a -> a.getKey().toString())
+				.reversed();
 	}
 
 	/**
@@ -278,6 +305,9 @@ public class OpenApiResource extends AbstractOpenApiResource {
 	 */
 	protected boolean isRestController(Map<String, Object> restControllers, HandlerMethod handlerMethod,
 			String operationPath) {
+		boolean hasOperationAnnotation = AnnotatedElementUtils.hasAnnotation(handlerMethod.getMethod(), Operation.class);
+		if (hasOperationAnnotation)
+			return true;
 		ResponseBody responseBodyAnnotation = AnnotationUtils.findAnnotation(handlerMethod.getBeanType(), ResponseBody.class);
 		if (responseBodyAnnotation == null)
 			responseBodyAnnotation = AnnotationUtils.findAnnotation(handlerMethod.getMethod(), ResponseBody.class);
@@ -295,9 +325,18 @@ public class OpenApiResource extends AbstractOpenApiResource {
 	 */
 	protected void calculateServerUrl(HttpServletRequest request, String apiDocsUrl) {
 		super.initOpenAPIBuilder();
-		String requestUrl = decode(request.getRequestURL().toString());
-		String calculatedUrl = requestUrl.substring(0, requestUrl.length() - apiDocsUrl.length());
-		openAPIBuilder.setServerBaseUrl(calculatedUrl);
+		String calculatedUrl = getServerUrl(request, apiDocsUrl);
+		openAPIService.setServerBaseUrl(calculatedUrl);
 	}
+
+	/**
+	 * Gets server url.
+	 *
+	 * @param request the request
+	 * @param apiDocsUrl the api docs url
+	 * @return the server url
+	 */
+	protected abstract String getServerUrl(HttpServletRequest request, String apiDocsUrl);
+
 
 }

@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import org.springdoc.core.SwaggerUiConfigProperties.SyntaxHighlight;
+
 import static org.springdoc.core.Constants.GROUP_NAME_NOT_NULL;
 
 /**
@@ -156,6 +158,50 @@ public abstract class AbstractSwaggerUiConfigProperties {
 	 * The Syntax highlight.
 	 */
 	protected SyntaxHighlight syntaxHighlight;
+
+	/**
+	 * Try it out enabled
+	 */
+	protected Boolean tryItOutEnabled;
+
+	/**
+	 * The Persist authorization.
+	 */
+	protected Boolean persistAuthorization;
+
+	/**
+	 * Gets try it out enabled
+	 * @return try it out enabled
+	 */
+	public Boolean getTryItOutEnabled() {
+		return tryItOutEnabled;
+	}
+
+	/**
+	 * Sets try it out enabled
+	 * @param tryItOutEnabled try it out enabled
+	 */
+	public void setTryItOutEnabled(Boolean tryItOutEnabled) {
+		this.tryItOutEnabled = tryItOutEnabled;
+	}
+
+	/**
+	 * Gets persist authorization.
+	 *
+	 * @return the persist authorization
+	 */
+	public Boolean getPersistAuthorization() {
+		return persistAuthorization;
+	}
+
+	/**
+	 * Sets persist authorization.
+	 *
+	 * @param persistAuthorization the persist authorization
+	 */
+	public void setPersistAuthorization(Boolean persistAuthorization) {
+		this.persistAuthorization = persistAuthorization;
+	}
 
 	/**
 	 * Gets syntax highlight.
@@ -588,58 +634,6 @@ public abstract class AbstractSwaggerUiConfigProperties {
 	 */
 	public void setUrlsPrimaryName(String urlsPrimaryName) {
 		this.urlsPrimaryName = urlsPrimaryName;
-	}
-
-	/**
-	 * The type Syntax highlight.
-	 */
-	public static class SyntaxHighlight{
-
-		/**
-		 * The Activated.
-		 */
-		private Boolean activated;
-
-		/**
-		 * The Theme.
-		 */
-		private String theme;
-
-		/**
-		 * Gets activated.
-		 *
-		 * @return the activated
-		 */
-		public Boolean getActivated() {
-			return activated;
-		}
-
-		/**
-		 * Sets activated.
-		 *
-		 * @param activated the activated
-		 */
-		public void setActivated(Boolean activated) {
-			this.activated = activated;
-		}
-
-		/**
-		 * Gets theme.
-		 *
-		 * @return the theme
-		 */
-		public String getTheme() {
-			return theme;
-		}
-
-		/**
-		 * Sets theme.
-		 *
-		 * @param theme the theme
-		 */
-		public void setTheme(String theme) {
-			this.theme = theme;
-		}
 	}
 
 	/**

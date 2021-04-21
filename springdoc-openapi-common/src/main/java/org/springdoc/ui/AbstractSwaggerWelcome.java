@@ -20,6 +20,7 @@
 
 package org.springdoc.ui;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springdoc.core.SpringDocConfigProperties;
 import org.springdoc.core.SwaggerUiConfigParameters;
@@ -29,13 +30,13 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import static org.springdoc.core.Constants.SWAGGGER_CONFIG_FILE;
+import static org.springdoc.core.Constants.SWAGGER_UI_OAUTH_REDIRECT_URL;
 import static org.springframework.util.AntPathMatcher.DEFAULT_PATH_SEPARATOR;
 
 
 /**
  * The type Abstract swagger welcome.
- * @author bnasslahsen
+ * @author bnasslashen
  */
 public abstract class AbstractSwaggerWelcome implements InitializingBean {
 
@@ -54,6 +55,20 @@ public abstract class AbstractSwaggerWelcome implements InitializingBean {
 	 */
 	protected final SwaggerUiConfigParameters swaggerUiConfigParameters;
 
+	/**
+	 * The Swagger config url.
+	 */
+	protected String swaggerConfigUrl;
+
+	/**
+	 * The Api docs url.
+	 */
+	protected String apiDocsUrl;
+
+	/**
+	 * The Context path.
+	 */
+	protected String contextPath;
 
 	/**
 	 * Instantiates a new Abstract swagger welcome.
@@ -81,34 +96,34 @@ public abstract class AbstractSwaggerWelcome implements InitializingBean {
 	 * @param docsUrl the docs url
 	 * @return the string
 	 */
-	protected String buildUrl(String contextPath, final String docsUrl) {
+	protected String buildUrl(String contextPath, String docsUrl) {
 		if (contextPath.endsWith(DEFAULT_PATH_SEPARATOR)) {
 			return contextPath.substring(0, contextPath.length() - 1) + docsUrl;
 		}
+		if (!docsUrl.startsWith(DEFAULT_PATH_SEPARATOR))
+			docsUrl = DEFAULT_PATH_SEPARATOR + docsUrl;
 		return contextPath + docsUrl;
 	}
 
 	/**
 	 * Build config url.
 	 *
-	 * @param contextPath the context path
 	 * @param uriComponentsBuilder the uri components builder
 	 */
-	protected void buildConfigUrl(String contextPath, UriComponentsBuilder uriComponentsBuilder) {
-		String apiDocsUrl = springDocConfigProperties.getApiDocs().getPath();
+	protected void buildConfigUrl( UriComponentsBuilder uriComponentsBuilder) {
 		if (StringUtils.isEmpty(swaggerUiConfig.getConfigUrl())) {
-			String url = buildUrl(contextPath, apiDocsUrl);
-			String swaggerConfigUrl = url + DEFAULT_PATH_SEPARATOR + SWAGGGER_CONFIG_FILE;
+			apiDocsUrl = buildApiDocUrl();
+			swaggerConfigUrl = buildSwaggerConfigUrl();
 			swaggerUiConfigParameters.setConfigUrl(swaggerConfigUrl);
 			if (CollectionUtils.isEmpty(swaggerUiConfigParameters.getUrls())) {
 				String swaggerUiUrl = swaggerUiConfig.getUrl();
 				if (StringUtils.isEmpty(swaggerUiUrl))
-					swaggerUiConfigParameters.setUrl(url);
+					swaggerUiConfigParameters.setUrl(apiDocsUrl);
 				else
 					swaggerUiConfigParameters.setUrl(swaggerUiUrl);
 			}
 			else
-				swaggerUiConfigParameters.addUrl(url);
+				swaggerUiConfigParameters.addUrl(apiDocsUrl);
 		}
 		calculateOauth2RedirectUrl(uriComponentsBuilder);
 	}
@@ -127,7 +142,8 @@ public abstract class AbstractSwaggerWelcome implements InitializingBean {
 					.filter(entry -> !entry.getKey().startsWith(SwaggerUiConfigParameters.URLS_PROPERTY))
 					.filter(entry -> StringUtils.isNotEmpty((String) entry.getValue()))
 					.forEach(entry -> uriBuilder.queryParam(entry.getKey(), entry.getValue()));
-		} else if (swaggerUiConfig.isDisplayQueryParamsWithoutOauth2() && StringUtils.isNotEmpty(swaggerUiConfigParameters.getUrl())) {
+		}
+		else if (swaggerUiConfig.isDisplayQueryParamsWithoutOauth2() && StringUtils.isNotEmpty(swaggerUiConfigParameters.getUrl())) {
 			swaggerUiConfigParameters.getConfigParameters().entrySet().stream()
 					.filter(entry -> !SwaggerUiConfigParameters.CONFIG_URL_PROPERTY.equals(entry.getKey()))
 					.filter(entry -> !SwaggerUiConfigParameters.OAUTH2_REDIRECT_URL_PROPERTY.equals(entry.getKey()))
@@ -160,4 +176,43 @@ public abstract class AbstractSwaggerWelcome implements InitializingBean {
 	 */
 	protected abstract void calculateUiRootPath(StringBuilder... sbUrls);
 
+	/**
+	 * Calculate ui root common.
+	 *
+	 * @param sbUrl the sb url
+	 * @param sbUrls the sb urls
+	 */
+	protected void calculateUiRootCommon(StringBuilder sbUrl, StringBuilder[] sbUrls) {
+		if (ArrayUtils.isNotEmpty(sbUrls))
+			sbUrl = sbUrls[0];
+		String swaggerPath = swaggerUiConfigParameters.getPath();
+		if (swaggerPath.contains(DEFAULT_PATH_SEPARATOR))
+			sbUrl.append(swaggerPath, 0, swaggerPath.lastIndexOf(DEFAULT_PATH_SEPARATOR));
+		swaggerUiConfigParameters.setUiRootPath(sbUrl.toString());
+	}
+
+	/**
+	 * Build api doc url string.
+	 *
+	 * @return the string
+	 */
+	protected abstract String buildApiDocUrl();
+
+	/**
+	 * Build swagger config url string.
+	 *
+	 */
+	protected abstract String buildSwaggerConfigUrl();
+
+	/**
+	 * Gets oauth2 redirect url.
+	 *
+	 * @return the oauth2 redirect url
+	 */
+	protected String getOauth2RedirectUrl() {
+		if (springDocConfigProperties.isCacheDisabled())
+			return StringUtils.defaultIfBlank(swaggerUiConfig.getOauth2RedirectUrl(), SWAGGER_UI_OAUTH_REDIRECT_URL);
+		else
+			return swaggerUiConfigParameters.getOauth2RedirectUrl();
+	}
 }

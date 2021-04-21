@@ -31,7 +31,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.springdoc.api.annotations.ParameterObject;
@@ -98,17 +97,12 @@ public class DelegatingMethodParameter extends MethodParameter {
 		for (int i = 0; i < parameters.length; ++i) {
 			MethodParameter p = parameters[i];
 			Class<?> paramClass = AdditionalModelsConverter.getReplacement(p.getParameterType());
-			if (p.hasParameterAnnotation(ParameterObject.class) || AnnotatedElementUtils.isAnnotated(paramClass, ParameterObject.class)) {
-				Stream<MethodParameter> methodParameterStream = MethodParameterPojoExtractor.extractFrom(paramClass);
-				if (!optionalDelegatingMethodParameterCustomizer.isPresent())
-					MethodParameterPojoExtractor.extractFrom(paramClass).forEach(explodedParameters::add);
-				else {
-					DelegatingMethodParameterCustomizer delegatingMethodParameterCustomizer = optionalDelegatingMethodParameterCustomizer.get();
-					methodParameterStream.forEach(methodParameter -> {
-						delegatingMethodParameterCustomizer.customize(p, methodParameter);
-						explodedParameters.add(methodParameter);
-					});
-				}
+
+			if (!MethodParameterPojoExtractor.isSimpleType(paramClass) && (p.hasParameterAnnotation(ParameterObject.class) || AnnotatedElementUtils.isAnnotated(paramClass, ParameterObject.class))) {
+				MethodParameterPojoExtractor.extractFrom(paramClass).forEach(methodParameter -> {
+					optionalDelegatingMethodParameterCustomizer.ifPresent(customizer -> customizer.customize(p, methodParameter));
+					explodedParameters.add(methodParameter);
+				});
 			}
 			else {
 				String name = pNames != null ? pNames[i] : p.getParameterName();

@@ -20,22 +20,33 @@
 
 package org.springdoc.webflux.ui;
 
+import java.util.Optional;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springdoc.core.ActuatorProvider;
 import org.springdoc.core.SpringDocConfigProperties;
 import org.springdoc.core.SpringDocConfiguration;
 import org.springdoc.core.SwaggerUiConfigParameters;
 import org.springdoc.core.SwaggerUiConfigProperties;
 import org.springdoc.core.SwaggerUiOAuthProperties;
 
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
+import org.springframework.boot.actuate.autoconfigure.web.server.ConditionalOnManagementPort;
+import org.springframework.boot.actuate.autoconfigure.web.server.ManagementPortType;
+import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
+import org.springframework.boot.actuate.endpoint.web.reactive.WebFluxEndpointHandlerMapping;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
+import org.springframework.web.reactive.result.method.RequestMappingInfoHandlerMapping;
 
 import static org.springdoc.core.Constants.SPRINGDOC_SWAGGER_UI_ENABLED;
+import static org.springdoc.core.Constants.SPRINGDOC_USE_MANAGEMENT_PORT;
 
 
 /**
@@ -49,17 +60,34 @@ import static org.springdoc.core.Constants.SPRINGDOC_SWAGGER_UI_ENABLED;
 public class SwaggerConfig implements WebFluxConfigurer {
 
 	/**
+	 * Swagger welcome swagger welcome web flux.
+	 *
+	 * @param swaggerUiConfig the swagger ui config
+	 * @param springDocConfigProperties the spring doc config properties
+	 * @param swaggerUiConfigParameters the swagger ui config parameters
+	 * @param requestMappingHandlerMapping the request mapping handler mapping
+	 * @return the swagger welcome web flux
+	 */
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnProperty(name = SPRINGDOC_USE_MANAGEMENT_PORT, havingValue = "false", matchIfMissing = true)
+	SwaggerWelcomeWebFlux swaggerWelcome(SwaggerUiConfigProperties swaggerUiConfig, SpringDocConfigProperties springDocConfigProperties,SwaggerUiConfigParameters swaggerUiConfigParameters, RequestMappingInfoHandlerMapping requestMappingHandlerMapping) {
+		return new SwaggerWelcomeWebFlux(swaggerUiConfig,springDocConfigProperties,swaggerUiConfigParameters,requestMappingHandlerMapping);
+	}
+
+	/**
 	 * Swagger web flux configurer swagger web flux configurer.
 	 *
 	 * @param swaggerUiConfigParameters the swagger ui calculated config
 	 * @param springDocConfigProperties the spring doc config properties
 	 * @param swaggerIndexTransformer the swagger index transformer
+	 * @param actuatorProvider the actuator provider
 	 * @return the swagger web flux configurer
 	 */
 	@Bean
 	@ConditionalOnMissingBean
-	SwaggerWebFluxConfigurer swaggerWebFluxConfigurer(SwaggerUiConfigParameters swaggerUiConfigParameters, SpringDocConfigProperties springDocConfigProperties, SwaggerIndexTransformer swaggerIndexTransformer) {
-		return new SwaggerWebFluxConfigurer(swaggerUiConfigParameters, springDocConfigProperties, swaggerIndexTransformer);
+	SwaggerWebFluxConfigurer swaggerWebFluxConfigurer(SwaggerUiConfigParameters swaggerUiConfigParameters, SpringDocConfigProperties springDocConfigProperties, SwaggerIndexTransformer swaggerIndexTransformer, Optional<ActuatorProvider> actuatorProvider) {
+		return new SwaggerWebFluxConfigurer(swaggerUiConfigParameters, springDocConfigProperties, swaggerIndexTransformer,actuatorProvider);
 	}
 
 	/**
@@ -88,4 +116,30 @@ public class SwaggerConfig implements WebFluxConfigurer {
 		return new SwaggerUiConfigParameters(swaggerUiConfig);
 	}
 
+	/**
+	 * The type Swagger actuator welcome configuration.
+	 * @author bnasslashen
+	 */
+	@ConditionalOnProperty(SPRINGDOC_USE_MANAGEMENT_PORT)
+	@ConditionalOnClass(WebFluxEndpointHandlerMapping.class)
+	@ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
+	static class SwaggerActuatorWelcomeConfiguration {
+
+		/**
+		 * Swagger actuator welcome swagger welcome actuator.
+		 *
+		 * @param swaggerUiConfig the swagger ui config
+		 * @param springDocConfigProperties the spring doc config properties
+		 * @param swaggerUiConfigParameters the swagger ui config parameters
+		 * @param webEndpointProperties the web endpoint properties
+		 * @param managementServerProperties the management server properties
+		 * @return the swagger welcome actuator
+		 */
+		@Bean
+		@ConditionalOnMissingBean
+		SwaggerWelcomeActuator swaggerActuatorWelcome(SwaggerUiConfigProperties swaggerUiConfig, SpringDocConfigProperties springDocConfigProperties,
+				SwaggerUiConfigParameters swaggerUiConfigParameters, WebEndpointProperties webEndpointProperties, ManagementServerProperties managementServerProperties) {
+			return new SwaggerWelcomeActuator(swaggerUiConfig, springDocConfigProperties, swaggerUiConfigParameters, webEndpointProperties,managementServerProperties);
+		}
+	}
 }

@@ -27,7 +27,7 @@
             "schema": {
               "minimum": 0,
               "type": "integer",
-              "default": "0"
+              "default": 0
             }
           },
           {
@@ -38,7 +38,7 @@
             "schema": {
               "minimum": 1,
               "type": "integer",
-              "default": "20"
+              "default": 20
             }
           },
           {
@@ -60,17 +60,17 @@
             "content": {
               "application/hal+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CollectionModelPerson"
+                  "$ref": "#/components/schemas/PagedModelEntityModelPerson"
                 }
               },
               "application/x-spring-data-compact+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CollectionModelPerson"
+                  "$ref": "#/components/schemas/PagedModelEntityModelPerson"
                 }
               },
               "text/uri-list": {
                 "schema": {
-                  "$ref": "#/components/schemas/CollectionModelPerson"
+                  "type": "string"
                 }
               }
             }
@@ -87,10 +87,11 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Person"
+                "$ref": "#/components/schemas/PersonRequestBody"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "201": {
@@ -98,7 +99,7 @@
             "content": {
               "application/hal+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RepresentationModelPerson"
+                  "$ref": "#/components/schemas/EntityModelPerson"
                 }
               }
             }
@@ -127,7 +128,7 @@
             "content": {
               "application/hal+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CollectionModelPerson"
+                  "$ref": "#/components/schemas/CollectionModelEntityModelPerson"
                 }
               }
             }
@@ -191,10 +192,11 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Person"
+                "$ref": "#/components/schemas/PersonRequestBody"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
@@ -202,7 +204,7 @@
             "content": {
               "application/hal+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RepresentationModelPerson"
+                  "$ref": "#/components/schemas/EntityModelPerson"
                 }
               }
             }
@@ -212,7 +214,7 @@
             "content": {
               "application/hal+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RepresentationModelPerson"
+                  "$ref": "#/components/schemas/EntityModelPerson"
                 }
               }
             }
@@ -267,10 +269,11 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Person"
+                "$ref": "#/components/schemas/PersonRequestBody"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
@@ -278,7 +281,7 @@
             "content": {
               "application/hal+json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RepresentationModelPerson"
+                  "$ref": "#/components/schemas/EntityModelPerson"
                 }
               }
             }
@@ -294,7 +297,7 @@
         "tags": [
           "profile-controller"
         ],
-        "operationId": "listAllFormsOfMetadata",
+        "operationId": "listAllFormsOfMetadata_1",
         "responses": {
           "200": {
             "description": "OK",
@@ -314,7 +317,7 @@
         "tags": [
           "profile-controller"
         ],
-        "operationId": "descriptor_1",
+        "operationId": "descriptor_1_1_1",
         "responses": {
           "200": {
             "description": "OK",
@@ -422,44 +425,6 @@
           }
         }
       },
-      "CollectionModelPerson": {
-        "type": "object",
-        "properties": {
-          "_embedded": {
-            "type": "object",
-            "properties": {
-              "people": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/Person"
-                }
-              }
-            }
-          },
-          "_links": {
-            "$ref": "#/components/schemas/Links"
-          }
-        }
-      },
-      "Person": {
-        "type": "object",
-        "properties": {
-          "firstName": {
-            "type": "string"
-          },
-          "lastName": {
-            "type": "string"
-          }
-        }
-      },
-      "RepresentationModelPerson": {
-        "type": "object",
-        "properties": {
-          "_links": {
-            "$ref": "#/components/schemas/Links"
-          }
-        }
-      },
       "EntityModelPerson": {
         "type": "object",
         "properties": {
@@ -471,6 +436,79 @@
           },
           "_links": {
             "$ref": "#/components/schemas/Links"
+          }
+        }
+      },
+      "PageMetadata": {
+        "type": "object",
+        "properties": {
+          "size": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "number": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "PagedModelEntityModelPerson": {
+        "type": "object",
+        "properties": {
+          "_embedded": {
+            "type": "object",
+            "properties": {
+              "people": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/EntityModelPerson"
+                }
+              }
+            }
+          },
+          "_links": {
+            "$ref": "#/components/schemas/Links"
+          },
+          "page": {
+            "$ref": "#/components/schemas/PageMetadata"
+          }
+        }
+      },
+      "CollectionModelEntityModelPerson": {
+        "type": "object",
+        "properties": {
+          "_embedded": {
+            "type": "object",
+            "properties": {
+              "people": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/EntityModelPerson"
+                }
+              }
+            }
+          },
+          "_links": {
+            "$ref": "#/components/schemas/Links"
+          }
+        }
+      },
+      "PersonRequestBody": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
           }
         }
       },

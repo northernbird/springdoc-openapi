@@ -20,6 +20,7 @@
 
 package org.springdoc.core;
 
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverters;
 import io.swagger.v3.core.converter.ResolvedSchema;
 import io.swagger.v3.core.util.AnnotationsUtils;
+import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.models.Components;
@@ -106,7 +108,7 @@ public class SpringDocAnnotationsUtils extends AnnotationsUtils {
 	 */
 	public static Schema extractSchema(Components components, Type returnType, JsonView jsonView, Annotation[] annotations) {
 		Schema schemaN = null;
-		ResolvedSchema resolvedSchema = null;
+		ResolvedSchema resolvedSchema;
 		try {
 			resolvedSchema = ModelConverters.getInstance()
 					.resolveAsResolvedSchema(
@@ -199,7 +201,7 @@ public class SpringDocAnnotationsUtils extends AnnotationsUtils {
 	 */
 	public static void mergeSchema(Content existingContent, Schema<?> schemaN, String mediaTypeStr) {
 		if (existingContent.containsKey(mediaTypeStr)) {
-			io.swagger.v3.oas.models.media.MediaType mediaType = existingContent.get(mediaTypeStr);
+			MediaType mediaType = existingContent.get(mediaTypeStr);
 			if (!schemaN.equals(mediaType.getSchema())) {
 				// Merge the two schemas for the same mediaType
 				Schema firstSchema = mediaType.getSchema();
@@ -221,7 +223,7 @@ public class SpringDocAnnotationsUtils extends AnnotationsUtils {
 		}
 		else
 			// Add the new schema for a different mediaType
-			existingContent.addMediaType(mediaTypeStr, new io.swagger.v3.oas.models.media.MediaType().schema(schemaN));
+			existingContent.addMediaType(mediaTypeStr, new MediaType().schema(schemaN));
 	}
 
 	/**
@@ -232,9 +234,15 @@ public class SpringDocAnnotationsUtils extends AnnotationsUtils {
 	 */
 	@SuppressWarnings("unchecked")
 	public static boolean isAnnotationToIgnore(MethodParameter parameter) {
-		return ANNOTATIONS_TO_IGNORE.stream().anyMatch(
-				annotation -> parameter.getParameterAnnotation(annotation) != null
+		boolean annotationFirstCheck = ANNOTATIONS_TO_IGNORE.stream().anyMatch(annotation ->
+				(parameter.getParameterIndex() != -1 && AnnotationUtils.findAnnotation(parameter.getMethod().getParameters()[parameter.getParameterIndex()], annotation) != null)
 						|| AnnotationUtils.findAnnotation(parameter.getParameterType(), annotation) != null);
+
+		boolean annotationSecondCheck = Arrays.stream(parameter.getParameterAnnotations()).anyMatch(annotation ->
+				ANNOTATIONS_TO_IGNORE.contains(annotation.annotationType())
+						|| ANNOTATIONS_TO_IGNORE.stream().anyMatch(annotationToIgnore -> annotation.annotationType().getDeclaredAnnotation(annotationToIgnore) != null));
+
+		return annotationFirstCheck || annotationSecondCheck;
 	}
 
 	/**
@@ -246,7 +254,7 @@ public class SpringDocAnnotationsUtils extends AnnotationsUtils {
 	public static boolean isAnnotationToIgnore(Type type) {
 		return ANNOTATIONS_TO_IGNORE.stream().anyMatch(
 				annotation -> (type instanceof Class
-						&&  AnnotationUtils.findAnnotation((Class<?>) type, annotation) != null));
+						&& AnnotationUtils.findAnnotation((Class<?>) type, annotation) != null));
 	}
 
 	/**
@@ -369,4 +377,16 @@ public class SpringDocAnnotationsUtils extends AnnotationsUtils {
 		return isArray;
 	}
 
+	public static Object resolveDefaultValue(String defaultValueStr) {
+		Object defaultValue = null;
+		if (StringUtils.isNotEmpty(defaultValueStr)) {
+			try {
+				defaultValue = Json.mapper().readTree(defaultValueStr);
+			}
+			catch (IOException e) {
+				defaultValue = defaultValueStr;
+			}
+		}
+		return defaultValue;
+	}
 }

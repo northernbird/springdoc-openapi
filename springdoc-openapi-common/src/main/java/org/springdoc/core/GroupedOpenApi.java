@@ -73,10 +73,19 @@ public class GroupedOpenApi {
 	 */
 	private final List<String> pathsToExclude;
 
+	/**
+	 * The Produces to match.
+	 */
 	private final List<String> producesToMatch;
 
+	/**
+	 * The Headers to match.
+	 */
 	private final List<String> headersToMatch;
 
+	/**
+	 * The Consumes to match.
+	 */
 	private final List<String> consumesToMatch;
 
 	/**
@@ -116,14 +125,29 @@ public class GroupedOpenApi {
 		return new Builder();
 	}
 
+	/**
+	 * Gets produces to match.
+	 *
+	 * @return the produces to match
+	 */
 	public List<String> getProducesToMatch() {
 		return producesToMatch;
 	}
 
+	/**
+	 * Gets headers to match.
+	 *
+	 * @return the headers to match
+	 */
 	public List<String> getHeadersToMatch() {
 		return headersToMatch;
 	}
 
+	/**
+	 * Gets consumes to match.
+	 *
+	 * @return the consumes to match
+	 */
 	public List<String> getConsumesToMatch() {
 		return consumesToMatch;
 	}
@@ -231,10 +255,19 @@ public class GroupedOpenApi {
 		 */
 		private List<String> pathsToExclude;
 
+		/**
+		 * The Produces to match.
+		 */
 		private List<String> producesToMatch;
 
+		/**
+		 * The Headers to match.
+		 */
 		private List<String> headersToMatch;
 
+		/**
+		 * The Consumes to match.
+		 */
 		private List<String> consumesToMatch;
 
 		/**
@@ -242,19 +275,6 @@ public class GroupedOpenApi {
 		 */
 		private Builder() {
 			// use static factory method in parent class
-		}
-
-		/**
-		 * Sets group.
-		 *
-		 * @param group the group
-		 * @return the group
-		 * @deprecated Since v1.4.0, GroupedOpenApi.setGroup is marked as deprecated. Use {@link #group(String) } instead.
-		 * will be removed with v1.5.0
-		 */
-		@Deprecated
-		public Builder setGroup(String group) {
-			return this.group(group);
 		}
 
 		/**
@@ -290,19 +310,39 @@ public class GroupedOpenApi {
 			return this;
 		}
 
+		/**
+		 * Produces to match builder.
+		 *
+		 * @param producesToMatch the produces to match
+		 * @return the builder
+		 */
 		public Builder producesToMatch(String... producesToMatch) {
 			this.producesToMatch = Arrays.asList(producesToMatch);
 			return this;
 		}
 
+		/**
+		 * Consumes to match builder.
+		 *
+		 * @param consumesToMatch the consumes to match
+		 * @return the builder
+		 */
 		public Builder consumesToMatch(String... consumesToMatch) {
 			this.consumesToMatch = Arrays.asList(consumesToMatch);
 			return this;
 		}
+
+		/**
+		 * Headers to match builder.
+		 *
+		 * @param headersToMatch the headers to match
+		 * @return the builder
+		 */
 		public Builder headersToMatch(String... headersToMatch) {
 			this.headersToMatch = Arrays.asList(headersToMatch);
 			return this;
 		}
+
 		/**
 		 * Paths to exclude builder.
 		 *

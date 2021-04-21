@@ -22,21 +22,18 @@ import org.junit.jupiter.api.Test;
 import test.org.springdoc.ui.AbstractSpringDocTest;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.test.web.servlet.MvcResult;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class SpringDocRedirectDefaultTest extends AbstractSpringDocTest {
 
 	@Test
 	public void shouldRedirectWithDefaultQueryParams() throws Exception {
-		MvcResult mvcResult = mockMvc.perform(get("/swagger-ui.html"))
-				.andExpect(status().isFound()).andReturn();
-
-		String locationHeader = mvcResult.getResponse().getHeader("Location");
-		assertEquals("/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config", locationHeader);
+		mockMvc.perform(get("/swagger-ui.html"))
+				.andExpect(status().isFound())
+				.andExpect(header().string("Location", "/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config"));
 	}
 
 	@SpringBootApplication

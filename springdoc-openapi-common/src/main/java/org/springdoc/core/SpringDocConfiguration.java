@@ -41,18 +41,25 @@ import org.springdoc.core.converters.PolymorphicModelConverter;
 import org.springdoc.core.converters.PropertyCustomizingConverter;
 import org.springdoc.core.converters.ResponseSupportConverter;
 import org.springdoc.core.converters.SchemaPropertyDeprecatingConverter;
+import org.springdoc.core.customizers.ActuatorOpenApiCustomizer;
+import org.springdoc.core.customizers.ActuatorOperationCustomizer;
 import org.springdoc.core.customizers.DelegatingMethodParameterCustomizer;
-import org.springdoc.core.customizers.OpenApiBuilderCustomiser;
+import org.springdoc.core.customizers.OpenApiBuilderCustomizer;
 import org.springdoc.core.customizers.OpenApiCustomiser;
+import org.springdoc.core.customizers.OperationCustomizer;
 import org.springdoc.core.customizers.PropertyCustomizer;
 
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
+import org.springframework.boot.actuate.autoconfigure.web.server.ConditionalOnManagementPort;
+import org.springframework.boot.actuate.autoconfigure.web.server.ManagementPortType;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.web.format.WebConversionService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -64,12 +71,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import static org.springdoc.core.Constants.SPRINGDOC_DEPRECATING_CONVERTER_ENABLED;
 import static org.springdoc.core.Constants.SPRINGDOC_ENABLED;
 import static org.springdoc.core.Constants.SPRINGDOC_SCHEMA_RESOLVE_PROPERTIES;
+import static org.springdoc.core.Constants.SPRINGDOC_SHOW_ACTUATOR;
 import static org.springdoc.core.SpringDocUtils.getConfig;
 
 /**
@@ -185,11 +192,11 @@ public class SpringDocConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean
-	OpenAPIBuilder openAPIBuilder(Optional<OpenAPI> openAPI, ApplicationContext context,
-			SecurityParser securityParser,
+	OpenAPIService openAPIBuilder(Optional<OpenAPI> openAPI, ApplicationContext context,
+			SecurityService securityParser,
 			SpringDocConfigProperties springDocConfigProperties,
-			Optional<List<OpenApiBuilderCustomiser>> openApiBuilderCustomisers) {
-		return new OpenAPIBuilder(openAPI, context, securityParser, springDocConfigProperties, openApiBuilderCustomisers);
+			Optional<List<OpenApiBuilderCustomizer>> openApiBuilderCustomisers) {
+		return new OpenAPIService(openAPI, context, securityParser, springDocConfigProperties, openApiBuilderCustomisers);
 	}
 
 	/**
@@ -208,7 +215,7 @@ public class SpringDocConfiguration {
 	 * Operation builder operation builder.
 	 *
 	 * @param parameterBuilder the parameter builder
-	 * @param requestBodyBuilder the request body builder
+	 * @param requestBodyService the request body builder
 	 * @param securityParser the security parser
 	 * @param propertyResolverUtils the property resolver utils
 	 * @return the operation builder
@@ -216,9 +223,9 @@ public class SpringDocConfiguration {
 	@Bean
 	@ConditionalOnWebApplication
 	@ConditionalOnMissingBean
-	OperationBuilder operationBuilder(GenericParameterBuilder parameterBuilder, RequestBodyBuilder requestBodyBuilder,
-			SecurityParser securityParser, PropertyResolverUtils propertyResolverUtils) {
-		return new OperationBuilder(parameterBuilder, requestBodyBuilder,
+	OperationService operationBuilder(GenericParameterService parameterBuilder, RequestBodyService requestBodyService,
+			SecurityService securityParser, PropertyResolverUtils propertyResolverUtils) {
+		return new OperationService(parameterBuilder, requestBodyService,
 				securityParser, propertyResolverUtils);
 	}
 
@@ -242,8 +249,8 @@ public class SpringDocConfiguration {
 	@Bean
 	@ConditionalOnWebApplication
 	@ConditionalOnMissingBean
-	RequestBodyBuilder requestBodyBuilder(GenericParameterBuilder parameterBuilder) {
-		return new RequestBodyBuilder(parameterBuilder);
+	RequestBodyService requestBodyBuilder(GenericParameterService parameterBuilder) {
+		return new RequestBodyService(parameterBuilder);
 	}
 
 	/**
@@ -254,8 +261,8 @@ public class SpringDocConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean
-	SecurityParser securityParser(PropertyResolverUtils propertyResolverUtils) {
-		return new SecurityParser(propertyResolverUtils);
+	SecurityService securityParser(PropertyResolverUtils propertyResolverUtils) {
+		return new SecurityService(propertyResolverUtils);
 	}
 
 	/**
@@ -274,29 +281,33 @@ public class SpringDocConfiguration {
 	 *
 	 * @param propertyResolverUtils the property resolver utils
 	 * @param optionalDelegatingMethodParameterCustomizer the optional delegating method parameter customizer
+	 * @param optionalWebConversionServiceProvider the optional web conversion service provider
 	 * @return the generic parameter builder
 	 */
 	@Bean
 	@ConditionalOnMissingBean
-	GenericParameterBuilder parameterBuilder(PropertyResolverUtils propertyResolverUtils, Optional<DelegatingMethodParameterCustomizer> optionalDelegatingMethodParameterCustomizer) {
-		return new GenericParameterBuilder(propertyResolverUtils,optionalDelegatingMethodParameterCustomizer);
+	GenericParameterService parameterBuilder(PropertyResolverUtils propertyResolverUtils,
+			Optional<DelegatingMethodParameterCustomizer> optionalDelegatingMethodParameterCustomizer,
+			Optional<WebConversionServiceProvider> optionalWebConversionServiceProvider) {
+		return new GenericParameterService(propertyResolverUtils, optionalDelegatingMethodParameterCustomizer,
+				optionalWebConversionServiceProvider);
 	}
 
 	/**
 	 * Properties resolver for schema open api customiser.
 	 *
 	 * @param propertyResolverUtils the property resolver utils
-	 * @param openAPIBuilder the open api builder
+	 * @param openAPIService the open api builder
 	 * @return the open api customiser
 	 */
 	@Bean
 	@ConditionalOnProperty(SPRINGDOC_SCHEMA_RESOLVE_PROPERTIES)
 	@Lazy(false)
-	OpenApiCustomiser propertiesResolverForSchema(PropertyResolverUtils propertyResolverUtils, OpenAPIBuilder openAPIBuilder) {
+	OpenApiCustomiser propertiesResolverForSchema(PropertyResolverUtils propertyResolverUtils, OpenAPIService openAPIService) {
 		return openApi -> {
 			Components components = openApi.getComponents();
 			Map<String, Schema> schemas = components.getSchemas();
-			schemas.values().forEach(schema -> openAPIBuilder.resolveProperties(schema, propertyResolverUtils));
+			schemas.values().forEach(schema -> openAPIService.resolveProperties(schema, propertyResolverUtils));
 		};
 	}
 
@@ -329,6 +340,7 @@ public class SpringDocConfiguration {
 
 	/**
 	 * The type Open api resource advice.
+	 * @author bnasslashen
 	 */
 	@RestControllerAdvice
 	@Hidden
@@ -337,13 +349,79 @@ public class SpringDocConfiguration {
 		 * Handle no handler found response entity.
 		 *
 		 * @param e the e
-		 * @param request the request
 		 * @return the response entity
 		 */
 		@ExceptionHandler(OpenApiResourceNotFoundException.class)
 		@ResponseStatus(HttpStatus.NOT_FOUND)
-		public ResponseEntity<ErrorMessage> handleNoHandlerFound(OpenApiResourceNotFoundException e, WebRequest request) {
+		public ResponseEntity<ErrorMessage> handleNoHandlerFound(OpenApiResourceNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessage(e.getMessage()));
+		}
+	}
+
+	/**
+	 * The type Spring doc web mvc actuator configuration.
+	 * @author bnasslashen
+	 */
+	@ConditionalOnClass(WebEndpointProperties.class)
+	@ConditionalOnProperty(SPRINGDOC_SHOW_ACTUATOR)
+	static class SpringDocActuatorConfiguration {
+
+		/**
+		 * Springdoc bean factory post processor 3 bean factory post processor.
+		 *
+		 * @param groupedOpenApis the grouped open apis
+		 * @return the bean factory post processor
+		 */
+		@Bean
+		@Lazy(false)
+		@ConditionalOnManagementPort(ManagementPortType.DIFFERENT)
+		@Conditional(MultipleOpenApiSupportCondition.class)
+		static BeanFactoryPostProcessor springdocBeanFactoryPostProcessor3(List<GroupedOpenApi> groupedOpenApis) {
+			return new SpringdocActuatorBeanFactoryConfigurer(groupedOpenApis);
+		}
+
+		/**
+		 * Actuator customizer operation customizer.
+		 *
+		 * @return the operation customizer
+		 */
+		@Bean
+		@Lazy(false)
+		OperationCustomizer actuatorCustomizer() {
+			return new ActuatorOperationCustomizer();
+		}
+
+		/**
+		 * Actuator customizer OpenAPI customiser.
+		 *
+		 * @param webEndpointProperties the web endpoint properties
+		 * @return the OpenAPI customiser
+		 */
+		@Bean
+		@Lazy(false)
+		OpenApiCustomiser actuatorOpenApiCustomiser(WebEndpointProperties webEndpointProperties) {
+			return new ActuatorOpenApiCustomizer(webEndpointProperties);
+		}
+
+	}
+
+	/**
+	 * The type Web conversion service configuration.
+	 * @author bnasslashen
+	 */
+	@ConditionalOnClass(WebConversionService.class)
+	static class WebConversionServiceConfiguration {
+
+		/**
+		 * Web conversion service provider web conversion service provider.
+		 *
+		 * @param webConversionServiceOptional the web conversion service optional
+		 * @return the web conversion service provider
+		 */
+		@Bean
+		@Lazy(false)
+		WebConversionServiceProvider webConversionServiceProvider(Optional<WebConversionService> webConversionServiceOptional) {
+			return new WebConversionServiceProvider(webConversionServiceOptional);
 		}
 	}
 

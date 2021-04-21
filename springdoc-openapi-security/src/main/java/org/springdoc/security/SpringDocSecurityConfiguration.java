@@ -91,11 +91,20 @@ public class SpringDocSecurityConfiguration {
 		}
 	}
 
+	/**
+	 * The type Spring security login endpoint configuration.
+	 */
 	@Lazy(false)
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(javax.servlet.Filter.class)
 	class SpringSecurityLoginEndpointConfiguration {
 
+		/**
+		 * Spring security login endpoint customiser open api customiser.
+		 *
+		 * @param applicationContext the application context
+		 * @return the open api customiser
+		 */
 		@Bean
 		@ConditionalOnProperty(SPRINGDOC_SHOW_LOGIN_ENDPOINT)
 		@Lazy(false)
@@ -105,8 +114,8 @@ public class SpringDocSecurityConfiguration {
 				for (SecurityFilterChain filterChain : filterChainProxy.getFilterChains()) {
 					Optional<UsernamePasswordAuthenticationFilter> optionalFilter =
 							filterChain.getFilters().stream()
-									.filter(filterVar -> filterVar instanceof UsernamePasswordAuthenticationFilter)
-									.map(filter -> (UsernamePasswordAuthenticationFilter) filter)
+									.filter(UsernamePasswordAuthenticationFilter.class::isInstance)
+									.map(UsernamePasswordAuthenticationFilter.class::cast)
 									.findAny();
 					if (optionalFilter.isPresent()) {
 						UsernamePasswordAuthenticationFilter usernamePasswordAuthenticationFilter = optionalFilter.get();

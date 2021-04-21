@@ -24,6 +24,10 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.time.Duration;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -35,6 +39,8 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -78,9 +84,13 @@ class MethodParameterPojoExtractor {
 		SIMPLE_TYPES.add(OptionalInt.class);
 		SIMPLE_TYPES.add(OptionalLong.class);
 		SIMPLE_TYPES.add(OptionalDouble.class);
+		SIMPLE_TYPES.add(AtomicLong.class);
+		SIMPLE_TYPES.add(AtomicInteger.class);
 
 		SIMPLE_TYPES.add(Map.class);
 		SIMPLE_TYPES.add(Iterable.class);
+		SIMPLE_TYPES.add(Duration.class);
+		SIMPLE_TYPES.add(LocalTime.class);
 
 		SIMPLE_TYPE_PREDICATES.add(Class::isPrimitive);
 		SIMPLE_TYPE_PREDICATES.add(Class::isEnum);
@@ -107,6 +117,7 @@ class MethodParameterPojoExtractor {
 	 */
 	private static Stream<MethodParameter> extractFrom(Class<?> clazz, String fieldNamePrefix) {
 		return allFieldsOf(clazz).stream()
+				.filter(field -> !field.getType().equals(clazz))
 				.flatMap(f -> fromGetterOfField(clazz, f, fieldNamePrefix))
 				.filter(Objects::nonNull);
 	}
@@ -122,8 +133,32 @@ class MethodParameterPojoExtractor {
 	private static Stream<MethodParameter> fromGetterOfField(Class<?> paramClass, Field field, String fieldNamePrefix) {
 		if (isSimpleType(field.getType()))
 			return fromSimpleClass(paramClass, field, fieldNamePrefix);
+		else if (field.getGenericType() instanceof TypeVariable<?>)
+			return extractTypeParameter(paramClass, (TypeVariable<?>) field.getGenericType(), field, fieldNamePrefix);
 		else
 			return extractFrom(field.getType(), fieldNamePrefix + field.getName() + ".");
+	}
+
+	/**
+	 * Extract type parameter stream.
+	 *
+	 * @param owningClass the owning class
+	 * @param genericType the generic type
+	 * @param field the field
+	 * @param fieldNamePrefix the field name prefix
+	 * @return the stream
+	 */
+	private static Stream<MethodParameter> extractTypeParameter(
+			Class<?> owningClass,
+			TypeVariable<?> genericType,
+			Field field,
+			String fieldNamePrefix) {
+
+		Type resolvedType = ReturnTypeParser.resolveType(genericType, owningClass);
+		if (resolvedType instanceof Class<?> && isSimpleType((Class<?>) resolvedType)) {
+			return fromSimpleClass(owningClass, field, fieldNamePrefix);
+		}
+		return Stream.empty();
 	}
 
 	/**
@@ -185,7 +220,7 @@ class MethodParameterPojoExtractor {
 	 * @param clazz the clazz
 	 * @return the boolean
 	 */
-	private static boolean isSimpleType(Class<?> clazz) {
+	static boolean isSimpleType(Class<?> clazz) {
 		return SIMPLE_TYPE_PREDICATES.stream().anyMatch(p -> p.test(clazz)) ||
 				SIMPLE_TYPES.stream().anyMatch(c -> c.isAssignableFrom(clazz));
 	}
